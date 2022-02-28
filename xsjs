@@ -189,7 +189,26 @@ Column 1 metadata:
   Table name:   PO.Item
   Is nullable:  false
 
+-----------------------------------------------------Reading the table data record by record and storing it as the JSOn format-------------------------------------
 
+var conn = $.hdb.getConnection();
 
+var query = 'SELECT "STATE","COUNTRY" FROM "Cust_Info"';
+var i;
+var rs = conn.executeQuery(query);
+var data =[];
+
+for (i =0; i< rs.length; i++)
+{
+var row ={};
+------we can also do storing the data into variable and iterat 
+var records = rs[i];
+row.state = rs[i].STATE;	
+row.country =rs[i].COUNTRY;
+
+	data.push(row);	
+}
+$.response.contentType = "application/json";
+$.response.setBody(JSON.stringify(data));
 
 
