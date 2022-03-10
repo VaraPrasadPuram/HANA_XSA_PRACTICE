@@ -211,4 +211,25 @@ row.country =rs[i].COUNTRY;
 $.response.contentType = "application/json";
 $.response.setBody(JSON.stringify(data));
 
+----------------------------------------------------------------Reading the table data using the Hdb connection-------------------------------------------------
+if ($.request.method === $.net.http.GET) {
+    const id = $.request.parameters.get('id');
+    $.response.contentType = "application/json";
+
+    const conn = $.hdb.getConnection();
+    try {
+        const resultSet = conn.executeQuery('select * from "user_table" where "id" = ?', id);
+        $.response.setBody(JSON.stringify(resultSet));
+        $.response.status = $.net.http.OK;
+    } catch (ex) {
+        $.response.setBody(ex.toString());
+    } finally {
+        if (conn) {
+            conn.close();
+        }
+    }
+}
+
+
+
 
