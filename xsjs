@@ -229,6 +229,21 @@ if ($.request.method === $.net.http.GET) {
         }
     }
 }
+-----------------------------------------------------Printing the body as the JSON format-----------------------------------------------------
+var body = '';
+    body = JSON.stringify({
+        "session": [{
+     
+          //$.session.getUsername() - Returns the user name of the logged-on database user
+          "UserName": $.session.getUsername(),
+     
+         //$.session.language - Contains an empty string unless a language is explicitly set by the XS session layer.
+         "Language": $.session.language
+        }]
+    });
+    $.response.contentType = 'application/json';
+    $.response.setBody(body);
+    $.response.status = $.net.http.OK;
 
 
 
