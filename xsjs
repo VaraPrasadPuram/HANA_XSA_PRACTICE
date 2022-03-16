@@ -245,6 +245,31 @@ var body = '';
     $.response.setBody(body);
     $.response.status = $.net.http.OK;
 
+================================================Updating the DISCOUNTAMOUNT ============================================
+var conn = $.hdb.getConnection();
+var rs;
+var query;
+query = 'SELECT * FROM "PO.Header" LIMIT 10';
+rs = conn.executeQuery(query);
+for (let item of rs) {
+	item.DISCOUNTAMOUNT = (item.GROSSAMOUNT - item.GROSSAMOUNT * .10);
+}
+$.response.contentType = "application/json";
+$.response.setBody(JSON.stringify(rs));
+===================================================Checking the table data==========================================
+$.response.contentType = "text/html";
+var sOutput = "Hello, World! <br><br>";
 
+var oConn = $.hdb.getConnection();
+var sQuery = 'select * from "PO.Item"';
+var aRs = oConn.executeQuery(sQuery);
 
+if (aRs.length>1) {
+    $.response.setBody("Failed to retrieve data");
+    $.response.status = $.net.http.INTERNAL_SERVER_ERROR;
+} else {
+    sOutput += "This is the response from my SQL: " + aRs[0].DUMMY;
+    $.response.setBody(sOutput);
+}
+oConn.close(); 
 
