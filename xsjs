@@ -272,4 +272,62 @@ if (aRs.length>1) {
     $.response.setBody(sOutput);
 }
 oConn.close(); 
+===============================Redaing Tables data with the Aggregation and selecting data with record iteration====================
+function   getData(){
+var conn = $.hdb.getConnection();
+var  purchId = $.request.parameters.get("purchId"); 
+var output = {};
+var entry;
+$.hdb.getConnection();
+ var query =   'SELECT "PURCHASEORDERID","CURRENCY",sum("GROSSAMOUNT") as "GROSSAMOUNT" FROM "PO.Item" where "PURCHASEORDERID" =? GROUP BY "PURCHASEORDERID","CURRENCY"';
+  var rs = conn.executeQuery(query, purchId);
+if(rs.length<1){
+		$.response.setBody("Failed to retieve data");
+        $.response.status = $.net.http.INTERNAL_SERVER_ERROR;
+    } else {
+        output.TotallGrossAmt = rs[0].GROSSAMOUNT;
+    }
+	if(output.TotallGrossAmt !==null){	
+	query = 'SELECT sum("GROSSAMOUNT") as "GROSSAMOUNT_HEAD",year("HISTORY.CHANGEDAT") as "YEAR" FROM "PO.Header" where "PURCHASEORDERID" =? GROUP BY year("HISTORY.CHANGEDAT")';
+	 rs = conn.executeQuery(query, purchId);	
+	if(rs.length<1){
+		$.response.setBody("Failed to retieve data");
+        $.response.status = $.net.http.INTERNAL_SERVER_ERROR;
+    } else {
+        output.Sales_YOY = [];
+        var i;
+        for (i=0;i<rs.length;i++){
+        entry ={};
+        entry.AMOUNT = rs[i].GROSSAMOUNT_HEAD;
+        entry.YEAR = rs[i].YEAR;
+         entry.CURRENCY = 'EURO';
+         output.Sales_YOY.push(entry);    
+        }
+    }
+	}
+$.response.status = $.net.http.OK;
+$.response.contentType = "application/json";
+$.response.setBody(JSON.stringify(output));
+}
+var aCmd = $.request.parameters.get("cmd");
+switch (aCmd) {
+    case "getData":
+        getData();
+        break;
+    default:
+        $.response.status = $.net.http.INTERNAL_SERVER_ERROR;
+        $.response.setBody('Invalid Command: ' + aCmd);
+}
+        
+calling the xsjs Service https://hxehost:51060/xsjs/arrayBasics.xsjs?cmd=getData&purchId=300000008
+
+
+
+
+
+
+
+
+
+
 
