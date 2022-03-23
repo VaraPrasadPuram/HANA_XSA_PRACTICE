@@ -1,3 +1,4 @@
+
 ------------------------------------------Simple XSJS file to perform the calcultaion multiplication---------------------------------------------
 function calculatemult(val1, val2)
 {
@@ -70,6 +71,54 @@ else
 }
 
 calling the xsjs file in the web broswer :https://hxehost:51056/xsjs/CalculatWithParameters.xsjs?valueone=10&valuetwo=20&opr=sum
+
+======================================================Accessing the First row of the Array object result===================
+
+var conn  = $.hdb.getConnection();
+var result = conn.executeQuery('SELECT "PURCHASEORDERID","PRODUCTID","QUANTITY", "GROSSAMOUNT" FROM "PO.Item" limit 5');
+//var iterator = result.getIterator();
+//console.log(iterator);
+/*var totalPrice = 0;
+while(iterator.next()) {
+    var currentRow = iterator.value();
+
+}*/
+var rs = result[0];
+$.response.contentType = 'application/json';
+    $.response.setBody(rs);
+    $.response.status = $.net.http.OK;
+
+===================================================Accessing teh Column values of the resultant====================================
+
+var conn  = $.hdb.getConnection();
+var result = conn.executeQuery('SELECT "PURCHASEORDERID","PRODUCTID","QUANTITY", "GROSSAMOUNT" FROM "PO.Item" limit 5');
+var rs = result[0]['PRODUCTID'];
+$.response.contentType = 'application/json';
+$.response.setBody(rs);
+$.response.status = $.net.http.OK;
+ -----------------------------------------------------------------------------   
+    var conn  = $.hdb.getConnection();
+var result = conn.executeQuery('SELECT "PURCHASEORDERID","PRODUCTID","QUANTITY", "GROSSAMOUNT" FROM "PO.Item" limit 5');
+var row = result[0];
+var rs = row['PURCHASEORDERID'];
+//var rs = row.PRODUCTID;
+//var rs = row[0];
+$.response.contentType = 'application/json';
+$.response.setBody(rs);
+$.response.status = $.net.http.OK;
+---------------------------------------------------------------------------------------------------
+
+var conn  = $.hdb.getConnection();
+var result = conn.executeQuery('SELECT "PURCHASEORDERID","PRODUCTID","QUANTITY", "GROSSAMOUNT" FROM "PO.Item" limit 5');
+var QTY;
+for (var row in result){
+	QTY += result[row]['QUANTITY'] + ' ';
+}
+$.response.contentType = 'application/json';
+    $.response.setBody(QTY);
+    $.response.status = $.net.http.OK;
+
+
 
 -----------------------------------Reading the table data and converting the table data into JSON format------------------------------	
 
@@ -322,8 +371,65 @@ switch (aCmd) {
 calling the xsjs Service https://hxehost:51060/xsjs/arrayBasics.xsjs?cmd=getData&purchId=300000008
 
 
+=================================Reading the Payload data and storing it into target table===================================
+var conn = $.hdb.getConnection();
+var i;
+var payload = 	[
+	{
+		"PRODUCT_ID": "VG10001",
+		"PRODUCT_NAME": "LAPTOP",
+		"CATEGORY": "ELECTRONICS",
+		"SIZE": "L",
+		"QTY": 10
+	},
+	{
+		"PRODUCT_ID": "VG10002",
+		"PRODUCT_NAME": "FRIDGE",
+		"CATEGORY": "ELECTRONICS",
+		"SIZE": "M",
+		"QTY": 12
+	},
+	{
+		"PRODUCT_ID": "VG10003",
+		"PRODUCT_NAME": "SWITCHES",
+		"CATEGORY": "ELECTRONICS",
+		"SIZE": "S",
+		"QTY": 5
+	}];
+	var result =[];
+for (i=0;i<payload.length;i++)
+{
+result.push([payload[i].PRODUCT_ID.toUpperCase(),payload[i].PRODUCT_NAME.toUpperCase(),payload[i].CATEGORY.toUpperCase(),payload[i].SIZE.toUpperCase(),payload[i].QTY]);	
+	//var bdata ={};
+	/*bdata.PRODUCT_ID = payload[i].PRODUCT_ID;
+	bdata.PRODUCT_NAME = payload[i].PRODUCT_NAME;
+	bdata.CATEGORY = payload[i].CATEGORY;
+	bdata.SIZE = payload[i].SIZE;
+    bdata.QTY = payload[i].QTY;*/
+
+}
+conn.executeUpdate('INSERT INTO "PRODUCT_INFO" VALUES (?,?,?,?,?)', result);
+var query =  'SELECT * FROM  "PRODUCT_INFO"';
+var rs = conn.executeQuery(query);
+if(rs.length<1){
+	$.response.setBody("Failed to retieve data");
+        $.response.status = $.net.http.INTERNAL_SERVER_ERROR;
+    } else {
+       $.response.setBody("Data is loaded in the table");
+	   $.response.status = $.net.http.OK;	
+}
 
 
+conn.commit();
+
+==================================================Loading the Array data into the target table========================================
+var connection = $.hdb.getConnection();
+
+var argsArray = [["VG10001","LAPTOP","ELECTRONICS","L",2], ["VG10002","FRIDGE","ELECTRONICS","M",3], ["VG10003","SWITCHES","ELECTRONICS","S",98]];
+connection.executeUpdate('INSERT INTO "PRODUCT_INFO" VALUES (?,?,?,?,?)', argsArray);
+$.response.setBody(JSON.stringify(argsArray));
+$.response.status = $.net.http.OK;	
+connection.commit();
 
 
 
