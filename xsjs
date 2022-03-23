@@ -431,7 +431,43 @@ $.response.setBody(JSON.stringify(argsArray));
 $.response.status = $.net.http.OK;	
 connection.commit();
 
+====================================================Scheduling the Procedure using the XSJS===========================================
+/*eslint no-console: 0, no-unused-vars: 0, no-shadow: 0, new-cap: 0*/
+/*eslint-env node, es6 */
+"use strict";
+//function showdata(filter_country)
+//{
+/*	$.response.contentType = "application/json";
+	var conn = $.hdb.getConnection();
+	var Adressinfo = conn.loadProcedure('Proc_xsjs_read');
+	var rs = Adressinfo('US');
+$.response.status = $.net.http.OK;	
+$.response.contentType = "application/json";	
+$.response.setBody(JSON.stringify(rs));
+conn.close();
+//}
+//var filter_country = $.request.parameters.get("Country");
+//showdata(filter_country);
+*/
+var country = $.request.parameters.get('im_country');  
+var results = {};                                        
+results.data = [];		
 
+try {
+var conn = $.hdb.getConnection(); 
+var query = conn.loadProcedure("Proc_xsjs_read"); 
+var params = query(country);    
+var out_data = params['p_out_table'];                                 
+results.data = out_data; 
+$.response.status = $.net.http.OK;                                   
+$.response.contentType = "application/json";
+$.response.setBody(JSON.stringify(results));                         
+} 
+catch (err) {                                                     
+$.response.setBody(err.message);
+}
+conn.commit();
+conn.close();
 
 
 
