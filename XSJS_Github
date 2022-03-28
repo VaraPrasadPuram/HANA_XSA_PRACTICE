@@ -69,6 +69,5 @@ var body =
 $.response.setBody(JSON.stringify(array));
 $.response.status = $.net.http.OK;
     }
-    select('SELECT TOP 5 * FROM "Addresses"');
+    select('SELECT TOP 2 * FROM "Addresses"');
    // return array;
-
