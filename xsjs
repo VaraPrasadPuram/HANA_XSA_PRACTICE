@@ -175,7 +175,21 @@ conn.close();
  $.response.setBody(body);
 $.response.contentType = "application/json";
 $.response.status = $.net.http.OK;*/
+------------------------------------------------------------Reading the table data using the input value---------------------------------------
+if ($.request.method === $.net.http.GET) {
+    var id = $.request.parameters.get('id');
+    $.response.contentType = "application/json";
 
+    var conn = $.hdb.getConnection();
+    try {
+        var resultSet = conn.executeQuery('select * from "Addresses" where "ADDRESSID" = ?', id);
+        $.response.setBody(JSON.stringify(resultSet));
+        $.response.status = $.net.http.OK;
+    } catch (ex) {
+        $.response.setBody(ex.message);
+    } 
+}
+calling URL https://hxehost:51060/xsjs/tablerecords.xsjs?id=1000000002
 --------------------------------------------Downloading table data as Execl file --------------------------------------------------------
 
 
