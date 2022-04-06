@@ -71,3 +71,40 @@ $.response.status = $.net.http.OK;
     }
     select('SELECT TOP 2 * FROM "Addresses"');
    // return array;
+=============================================Function call reading the data-=====================================
+var conn = $.hdb.getConnection();
+var rows ="AddresssInfo";
+var i;
+var rows = {};
+var data = [];
+var query = 'SELECT * FROM "get_po_by_partnerid_tf"()';
+var rs = conn.executeQuery(query);
+var iterator = rs.getIterator();
+var colummetadata = rs.metadata.columns;
+if(rs.length>1)
+	{
+		var currentrow = iterator.value();
+	}
+	
+$.response.contentType = "application/json";
+$.response.setBody(JSON.stringify(currentrow));
+$.response.status = $.net.http.OK;
+  
+	   /*   var numColums = columnsMetadata.length;
+for (i =0; i< rs.length; i++)
+{
+or (i=0;i<colummetadata.length;i++){
+		var rows = {};
+		rows.colummetadata[i].label;
+		}
+			data.push(rows);	
+}
+var rows ={};
+rows[rs.MetaData.columns[i].label]  =                        
+*/
+
+
+
+
+
+
